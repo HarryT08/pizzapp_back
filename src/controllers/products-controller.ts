@@ -9,11 +9,9 @@ Metodo para obtener un producto por su id, usando el ORM de typeorm
 */
 export const getProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const parseId = {
-    id: Number(id)
-  };
   const product = await Producto.findOne({
-    where: parseId
+    where: {  id: parseInt(id), deleted: false },
+    relations: ['costoProductoTamanio']
   });
   return res.json(product);
 };
