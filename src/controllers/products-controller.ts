@@ -39,7 +39,7 @@ export const getProducts = async (req: Request, res: Response) => {
 Metodo para crear un producto, usando el ORM de typeorm
 */
 export const createProduct = async (req: Request, res: Response) => {
-  let { nombre, costos, preparaciones } = req.body;
+  let { nombre, costos } = req.body;
   const nameClean = cleanProductName(nombre);
   const product = await searchProduct(nameClean);
 
@@ -50,11 +50,10 @@ export const createProduct = async (req: Request, res: Response) => {
   }  
 
   try {
-
     const newProduct = new Producto();
     newProduct.init(nameClean, costos);
-    //Initialize atributes of newProduct
-    uploadPreparationsAndPriceBySize(newProduct, costos, preparaciones);  
+
+    Producto.create(newProduct);
 
     return res.status(201).json({
       message: 'Producto creado con exito'
