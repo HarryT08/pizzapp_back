@@ -53,7 +53,8 @@ export const createProduct = async (req: Request, res: Response) => {
     const newProduct = new Producto();
     newProduct.init(nameClean, costos);
 
-    Producto.create(newProduct);
+    newProduct.costoProductoTamanio = initializePriceBySize(0, costos);
+    Producto.save(newProduct);
 
     return res.status(201).json({
       message: 'Producto creado con exito'
