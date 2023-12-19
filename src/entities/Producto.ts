@@ -25,10 +25,11 @@ export class Producto extends BaseEntity{
     @Column( {default : false} )
     deleted: boolean;
 
-    //category : string
-
     @OneToMany(() => CostoProductoTamanio,(costoProductoTamanio) => costoProductoTamanio.producto, {cascade : true})
     costoProductoTamanio : CostoProductoTamanio[];
+
+    @Column({ default : false })
+    esBebida: boolean;
 
     constructor(){
         super();

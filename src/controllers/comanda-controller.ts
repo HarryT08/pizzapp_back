@@ -37,6 +37,7 @@ export const updateStateComanda = async (req: Request, res: Response) => {
     if (comanda) {
       comanda.estado = estado;
       await comanda.save();
+      setState(parseInt(id), "Disponible");
       res.json({ message: 'Comanda actualizada' });
     } else {
       res.status(404).json({ message: 'Comanda no encontrada' });
