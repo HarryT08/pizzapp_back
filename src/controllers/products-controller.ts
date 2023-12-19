@@ -152,7 +152,7 @@ export const updateProduct = async (req: Request, res: Response) => {
     producto.nombre = nombre;
     producto.esBebida = esBebida;
     uploadPreparationsAndPriceBySize(producto, costos, preparaciones);
-    producto.costoProductoTamanio = initializePriceBySize(0, costos);
+    producto.costoProductoTamanio = initializePriceBySize(producto.id, costos);
     await producto.save();
     res.status(204).json({ message: 'Producto actualizado' });
   } catch (error) {
