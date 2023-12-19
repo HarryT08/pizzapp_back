@@ -37,7 +37,7 @@ export const getProducts = async (req: Request, res: Response) => {
 Metodo para crear un producto, usando el ORM de typeorm
 */
 export const createProduct = async (req: Request, res: Response) => {
-  let { nombre, costos } = req.body;
+  let { nombre, costos, esBebida } = req.body;
   const nameClean = cleanProductName(nombre);
   const product = await searchProduct(nameClean);
 
@@ -50,7 +50,7 @@ export const createProduct = async (req: Request, res: Response) => {
   try {
     const newProduct = new Producto();
     newProduct.init(nameClean, costos);
-
+    newProduct.esBebida = esBebida;
     newProduct.costoProductoTamanio = initializePriceBySize(0, costos);
     Producto.save(newProduct);
 
@@ -138,7 +138,7 @@ Metodo para actualizar un producto, usando el ORM de typeorm
 */
 export const updateProduct = async (req: Request, res: Response) => {
   const id = Number.parseInt(req.params['id']);
-  let { nombre, costos, preparaciones } = req.body;
+  let { nombre, costos, preparaciones, esBebida } = req.body;
   const producto = await Producto.findOne({ 
     where: {
       id: id, 
@@ -150,6 +150,7 @@ export const updateProduct = async (req: Request, res: Response) => {
   
   try {
     producto.nombre = nombre;
+    producto.esBebida = esBebida;
     uploadPreparationsAndPriceBySize(producto, costos, preparaciones);
     producto.costoProductoTamanio = initializePriceBySize(0, costos);
     await producto.save();
