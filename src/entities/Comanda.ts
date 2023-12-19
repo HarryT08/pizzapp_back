@@ -33,7 +33,7 @@ export class Comanda extends BaseEntity{
     @Column()
     estado: string;
 
-    @OneToMany(() => DetalleComanda, (detalleComanda) => detalleComanda.comanda)
+    @OneToMany(() => DetalleComanda, (detalleComanda) => detalleComanda.comanda,  {cascade : true})
     detalleComanda: DetalleComanda[];
 
     @Column()

@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { MoreThanOrEqual, QueryRunner } from 'typeorm';
 import { Comanda } from '../entities/Comanda';
 import { DetalleComanda } from '../entities/DetalleComanda';
 import { setState } from './mesas-controller';
@@ -62,46 +61,46 @@ export const getComandas = async (req: Request, res: Response) => {
 };
 
 /*
-
     TODO: Metodo para crear una comanda
     TODO: Crear el detalle comanda
     TODO: terminar pedido cambia el estado de la mesa a 'OCUPADO'
     TODO: cancelar pedido cambia el estado de la mesa a 'DISPONIBLE'
-
 */
 
-const calculateTotal = (data: any) => {
-  let total = 0;
-  for (const product of data) {
-    const { cantidad, costo } = product;
-    total += cantidad * costo;
-  }
-  return total;
-};
-
 export const crearComanda = async (req: Request, res: Response) => {
-  
+  const { carrito, observaciones, mesa, total } = req.body;
+  try {
+    const comanda = new Comanda();
+    comanda.init(total, mesa, new Date(), observaciones, 'Abierta');
+    comanda.detalleComanda = crearDetalles(carrito, comanda);
+    Comanda.save(comanda);
+    setState(mesa, 'Ocupado');
+    return res.json({ message: 'Comanda creada' });
+  } catch (error) {
+
+    console.error(error);
+    setState(mesa, 'Disponible');
+    if (error instanceof Error)
+      return res.status(500).json({ message: error.message });
+  }
 };
 
-const crearDetalles = async (
-  comanda: Comanda,
-  productos: any,
-  queryRunner: QueryRunner
-) => {
+const crearDetalles = (productos: any, comanda: Comanda) => {
+  let detalles: any = [];
   for (const product of productos) {
-    const subtotal = product.costo * product.cantidad;
-    const detalleComanda = new DetalleComanda();
-
-    detalleComanda.init(
-      comanda.id,
-      subtotal,
-      product.cantidad,
-      product.id,
-      product.tamanio
-    );
-
-    await queryRunner.manager.save(detalleComanda);
+    for(const costoProducto of product.costoProductoTamanio){
+      const detalleComanda = new DetalleComanda();
+      detalleComanda.init(
+        0,
+        costoProducto.total, 
+        costoProducto.cantidad, 
+        costoProducto.idProducto,
+        costoProducto.tamanio
+        )
+      detalles.push(detalleComanda);
+    }
   }
+  return detalles;
 };
 
 /*
